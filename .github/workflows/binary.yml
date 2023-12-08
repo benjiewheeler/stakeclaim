@@ -1,0 +1,41 @@
+#
+name: Build & Push Release Binaries
+
+on:
+  push:
+    tags:
+      - "*"
+  workflow_dispatch:
+
+jobs:
+  push:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Go
+        uses: actions/setup-go@v4
+        with:
+          go-version: "1.21.x"
+
+      - name: Install dependencies
+        run: |
+          go mod download
+          go mod tidy
+
+      - name: Build binaries
+        run: |
+          env GOOS=linux GOARCH=amd64 go build -ldflags="-s -w" -o ./dist/stakeclaim-linux .
+          env GOOS=windows GOARCH=amd64 go build -ldflags="-s -w" -o ./dist/stakeclaim-win.exe .
+          env GOOS=darwin GOARCH=amd64 go build -ldflags="-s -w" -o ./dist/stakeclaim-macos-amd64 .
+          env GOOS=darwin GOARCH=arm64 go build -ldflags="-s -w" -o ./dist/stakeclaim-macos-arm64 .
+
+      - name: Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            ./dist/*
