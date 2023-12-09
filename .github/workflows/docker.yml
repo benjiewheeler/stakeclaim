@@ -3,8 +3,6 @@ name: Build & Push to Container Registry
 
 on:
   push:
-    branches:
-      - master
     tags:
       - "*"
   workflow_dispatch:
