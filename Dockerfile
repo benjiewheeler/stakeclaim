@@ -1,5 +1,5 @@
 # Build stage
-FROM golang:alpine AS build
+FROM golang:1.21-alpine AS build
 
 # change working directory
 WORKDIR /opt/app
@@ -19,7 +19,7 @@ RUN CGO_ENABLED=0 GOOS=linux go build -o /opt/app/stakeclaim
 #------------------------------------------------------------
 
 # Run stage
-FROM alpine
+FROM alpine:3.19
 
 # change working directory
 WORKDIR /app
